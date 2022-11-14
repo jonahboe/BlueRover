@@ -5,10 +5,10 @@ import Emotion
 import IR
 import time
 
-car = Drive()
-us = Ultrasonic()
-ir = IR()
-em = Emotion()
+car = Drive.Drive()
+us = Ultrasonic.Ultrasonic()
+ir = IR.IR()
+em = Emotion.Emotion()
 
 def runCar():
     car.Car_Run(150, 150)
@@ -98,9 +98,11 @@ def avoid():
 
 # Main code goes here
 if __name__ == '__main__':
-    args = sys.argv[1:]
-    if args.size > 0:
-        em.render = (args[0].lower() == 'true')
+    args = []
+    for arg in sys.argv:
+        args.append(arg.lower())
+    if args.contains('render=true'):
+        em.render = True
     try:
         em.daemon = True
         em.start()
