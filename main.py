@@ -1,3 +1,4 @@
+import sys
 import Drive
 import Ultrasonic
 import Emotion
@@ -97,6 +98,9 @@ def avoid():
 
 # Main code goes here
 if __name__ == '__main__':
+    args = sys.argv[1:]
+    if args.size > 0:
+        em.render = args[0]
     try:
         em.daemon = True
         em.start()

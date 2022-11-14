@@ -8,6 +8,7 @@ class Emotion(threading.Thread):
         self.emotion_detector = FER(mtcnn=True)
         self.cam = cv2.VideoCapture(0)
         self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        self.render = False
 
     def __del__(self):
         cv2.destroyAllWindows()
@@ -36,7 +37,7 @@ class Emotion(threading.Thread):
                     for key in emotions.keys():
                         cv2.putText(img=image, text=(str(key) + ": " + str(emotions[key])), org=(x, y+h+offset), fontFace=cv2.FONT_HERSHEY_TRIPLEX, fontScale=.5, color=(0, 255, 0),thickness=1)
                         offset += 20
-            if args[1]:
+            if self.render:
                 cv2.imshow("video", image)
 
             if cv2.waitKey(1) == 27: 
