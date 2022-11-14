@@ -100,7 +100,7 @@ def avoid():
 if __name__ == '__main__':
     args = sys.argv[1:]
     if args.size > 0:
-        em.render = args[0]
+        em.render = (args[0].lower() == 'true')
     try:
         em.daemon = True
         em.start()
