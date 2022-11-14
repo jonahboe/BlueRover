@@ -1,8 +1,7 @@
-#!/usr/bin/env python
-# coding: utf-8
 import smbus
 import time
 import math
+
 class Drive(object):
 
     def get_i2c_device(self, address, i2c_bus):
@@ -113,3 +112,57 @@ class Drive(object):
             self.write_array(reg, data)
         except:
             print ('Ctrl_Servo I2C error') 
+
+    def avoid(self, us, ir):
+        distance = us.distanceTest()
+        LeftSensorValue  = ir.getLeftDetect()
+        RightSensorValue = ir.getRightDetect()
+        print("L: {0}, R: {1}".format(LeftSensorValue, RightSensorValue))
+        #With obstacle pin is low level, the indicator light is on, without obstacle, pin is high level, the indicator light is off
+        if distance < 15 and LeftSensorValue and RightSensorValue:
+            self.Car_Stop() 
+            time.sleep(0.1)
+            self.Car_Spin_Right(80,80) 
+            time.sleep(1)
+        elif distance < 15 and not LeftSensorValue and RightSensorValue:
+            self.Car_Stop()
+            time.sleep(0.1)
+            self.Car_Spin_Left(80,80) 
+            time.sleep(1)
+            if LeftSensorValue and not RightSensorValue:
+                self.Car_Stop()
+                time.sleep(0.1)
+                self .Car_Spin_Right(80,80) 
+                time.sleep(2)
+        elif distance < 15 and LeftSensorValue and not RightSensorValue:
+            self.Car_Stop() 
+            time.sleep(0.1)
+            self.Car_Spin_Right(80,80)
+            time.sleep(1)
+            if not LeftSensorValue and RightSensorValue:
+                self.Car_Stop()
+                time.sleep(0.1)
+                self.Car_Spin_Left(80,80) 
+                time.sleep(2)
+        elif distance < 15 and not LeftSensorValue and not RightSensorValue:
+            self.Car_Stop() 
+            time.sleep(0.1)
+            self.Car_Spin_Right(80,80) 
+            time.sleep(0.5)
+        elif distance >= 15 and LeftSensorValue and RightSensorValue:
+            self.Car_Stop() 
+            time.sleep(0.1)
+            self.Car_Spin_Right(80,80) 
+            time.sleep(1)
+        elif distance >= 15 and LeftSensorValue and not RightSensorValue:
+            self.Car_Stop() 
+            time.sleep(0.1)
+            self.Car_Spin_Right(80,80) 
+            time.sleep(0.5)
+        elif distance >= 15 and not LeftSensorValue and RightSensorValue:
+            self.Car_Stop() 
+            time.sleep(0.1)
+            self.Car_Spin_Left(80,80) 
+            time.sleep(0.5)
+        else:
+            self.Car_Run(80,80) 

@@ -8,7 +8,6 @@ import time
 car = Drive.Drive()
 us = Ultrasonic.Ultrasonic()
 ir = IR.IR()
-em = Emotion.Emotion()
 
 def runCar():
     car.Car_Run(150, 150)
@@ -42,75 +41,27 @@ def testIR():
         print()
         time.sleep(1)
 
-def avoid():
-    distance = us.distanceTest()
-    LeftSensorValue  = ir.getLeftDetect()
-    RightSensorValue = ir.getRightDetect()
-    print("L: {0}, R: {1}".format(LeftSensorValue, RightSensorValue))
-    #With obstacle pin is low level, the indicator light is on, without obstacle, pin is high level, the indicator light is off
-    if distance < 15 and LeftSensorValue and RightSensorValue:
-        car.Car_Stop() 
-        time.sleep(0.1)
-        car.Car_Spin_Right(80,80) 
-        time.sleep(1)
-    elif distance < 15 and not LeftSensorValue and RightSensorValue:
-        car.Car_Stop()
-        time.sleep(0.1)
-        car.Car_Spin_Left(80,80) 
-        time.sleep(1)
-        if LeftSensorValue and not RightSensorValue:
-            car.Car_Stop()
-            time.sleep(0.1)
-            car.Car_Spin_Right(80,80) 
-            time.sleep(2)
-    elif distance < 15 and LeftSensorValue and not RightSensorValue:
-        car.Car_Stop() 
-        time.sleep(0.1)
-        car.Car_Spin_Right(80,80)
-        time.sleep(1)
-        if not LeftSensorValue and RightSensorValue:
-            car.Car_Stop()
-            time.sleep(0.1)
-            car.Car_Spin_Left(80,80) 
-            time.sleep(2)
-    elif distance < 15 and not LeftSensorValue and not RightSensorValue:
-        car.Car_Stop() 
-        time.sleep(0.1)
-        car.Car_Spin_Right(80,80) 
-        time.sleep(0.5)
-    elif distance >= 15 and LeftSensorValue and RightSensorValue:
-        car.Car_Stop() 
-        time.sleep(0.1)
-        car.Car_Spin_Right(80,80) 
-        time.sleep(1)
-    elif distance >= 15 and LeftSensorValue and not RightSensorValue:
-        car.Car_Stop() 
-        time.sleep(0.1)
-        car.Car_Spin_Right(80,80) 
-        time.sleep(0.5)
-    elif distance >= 15 and not LeftSensorValue and RightSensorValue:
-        car.Car_Stop() 
-        time.sleep(0.1)
-        car.Car_Spin_Left(80,80) 
-        time.sleep(0.5)
-    else:
-        car.Car_Run(80,80) 
-
 # Main code goes here
 if __name__ == '__main__':
+    # Set up the emotion detection
+    em = Emotion.Emotion()
+    em.daemon = True
     args = []
     for arg in sys.argv:
         args.append(arg.lower())
-    if args.contains('render=true'):
+    if 'render=true' in args:
         em.render = True
     try:
-        em.daemon = True
         em.start()
-        while True:
-            #avoid()
-            time.sleap(10)
     except KeyboardInterrupt:
         pass
+
+    # Run avoidance 
+    while True:
+        time.sleep(1)
+        #car.avoid(ir=ir, us=us)
+
+    # Stop the car and dispose of resources
     car.Car_Stop() 
     del car
     del us
