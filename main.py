@@ -1,11 +1,13 @@
 import Drive
 import Ultrasonic
+import Emotion
 import IR
 import time
 
-car = Drive.Drive()
-us = Ultrasonic.Ultrasonic()
-ir = IR.IR()
+car = Drive()
+us = Ultrasonic()
+ir = IR()
+em = Emotion()
 
 def runCar():
     car.Car_Run(150, 150)
@@ -94,12 +96,17 @@ def avoid():
         car.Car_Run(80,80) 
 
 # Main code goes here
-try:
-    while True:
-        avoid()
-except KeyboardInterrupt:
-    pass
-car.Car_Stop() 
-del car
-del us
-del ir
+if __name__ == '__main__':
+    try:
+        em.daemon = True
+        em.start()
+        while True:
+            #avoid()
+            time.sleap(10)
+    except KeyboardInterrupt:
+        pass
+    car.Car_Stop() 
+    del car
+    del us
+    del ir
+    del em
