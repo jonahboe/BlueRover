@@ -83,6 +83,9 @@ if __name__ == '__main__':
             car.Ctrl_Servo(2, 60)
         # Otherwise move the cmera pitch to center the subject
         else:
+            y = loc[1]
+            y_delta = pitch_pid(loc[1])
+            car.Ctrl_Servo(2, y_delta)
             print(loc)
         #car.avoid(ir=ir, us=us)
 
