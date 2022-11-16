@@ -4,12 +4,14 @@ import Ultrasonic
 import Emotion
 import IR
 import time
+from simple_pid import PID
 
 car = Drive.Drive()
 us = Ultrasonic.Ultrasonic()
 ir = IR.IR()
 
 YAH = 80
+LOCATING_TIMEOUT = 10
 
 def runCar():
     car.Car_Run(150, 150)
@@ -58,13 +60,30 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         pass
 
-    # set yah servo for camera
+    # set pitch and yah servo for camera... Twice? There's a bug in the library.
+    car.Ctrl_Servo(1, YAH)
+    car.Ctrl_Servo(2, 60)
+    time.sleep(1)
     car.Ctrl_Servo(1, YAH)
     car.Ctrl_Servo(2, 60)
 
-    # Run avoidance 
+    # We need a PID controller for the pitch servo
+    pitch_pid = PID(1, 0.1, 0.05, setpoint=60)
+    pitch_pid.output_limits = (0, 60) 
+
+    # Run main control loop 
     while True:
-        time.sleep(1)
+        # Check if there is a person
+        for t in range(LOCATING_TIMEOUT):
+            loc = em.location
+            if loc is not None:
+                break
+        # If there isn't, then reset the pitch servo
+        if loc is None:
+            car.Ctrl_Servo(2, 60)
+        # Otherwise move the cmera pitch to center the subject
+        else:
+            print(loc)
         #car.avoid(ir=ir, us=us)
 
     # Stop the car and dispose of resources
