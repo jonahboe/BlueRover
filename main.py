@@ -68,10 +68,10 @@ if __name__ == '__main__':
     car.Ctrl_Servo(2, 60)
 
     # We need a PID controller for the pitch servo
-    pitch_pid = PID(1, 0.1, 0.05, setpoint=0)
-    pitch_pid.output_limits = (0, 60) 
+    pitch_pid = PID(1, 0.1, 0.09, setpoint=0) 
 
-    # Run main control loop 
+    # Run main control loop
+    pitch = 60
     while True:
         # Check if there is a person
         for t in range(LOCATING_TIMEOUT):
@@ -80,14 +80,18 @@ if __name__ == '__main__':
                 break
         # If there isn't, then reset the pitch servo
         if loc is None:
-            car.Ctrl_Servo(2, 60)
+            pitch = 60
+            # Do some colision avoidance
         # Otherwise move the cmera pitch to center the subject
         else:
-            y = loc[1]
-            y_delta = -pitch_pid(loc[1])
-            car.Ctrl_Servo(2, y_delta)
-            print(loc)
-        #car.avoid(ir=ir, us=us)
+            pitch -= pitch_pid(loc[1]/100)
+            print(pitch)
+            if pitch < 10:
+                pitch = 10
+            elif pitch > 60:
+                pitch = 60
+        time.sleep(0.2)
+        car.Ctrl_Servo(2, int(pitch))
 
     # Stop the car and dispose of resources
     car.Car_Stop() 
