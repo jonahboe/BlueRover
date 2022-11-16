@@ -12,6 +12,7 @@ class Emotion(threading.Thread):
         self.cam = cv2.VideoCapture(0)
         self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
         self.render = False
+        self.location = (-1, -1)
 
     def __del__(self):
         cv2.destroyAllWindows()
@@ -43,9 +44,11 @@ class Emotion(threading.Thread):
             faces = self.face_cascade.detectMultiScale(gray_img, 1.25, 4)
             if len(faces) > 0:
                 print(faces[0])
+                # Draw box for rendering people location
                 if self.render:
                     (x,y,w,h) = faces[0]
                     cv2.rectangle(image,(x,y),(x+w,y+h),(255,255,0),2)
+            # Render the video feed
             if self.render:
                 cv2.imshow("video", image)
             

@@ -9,6 +9,8 @@ car = Drive.Drive()
 us = Ultrasonic.Ultrasonic()
 ir = IR.IR()
 
+YAH = 80
+
 def runCar():
     car.Car_Run(150, 150)
     time.sleep(1)
@@ -55,6 +57,10 @@ if __name__ == '__main__':
         em.start()
     except KeyboardInterrupt:
         pass
+
+    # set yah servo for camera
+    car.Ctrl_Servo(1, YAH)
+    car.Ctrl_Servo(2, 60)
 
     # Run avoidance 
     while True:
