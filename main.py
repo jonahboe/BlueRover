@@ -68,7 +68,7 @@ if __name__ == '__main__':
     car.Ctrl_Servo(2, 60)
 
     # We need a PID controller for the pitch servo
-    pitch_pid = PID(1, 0.1, 0.05, setpoint=60)
+    pitch_pid = PID(1, 0.1, 0.05, setpoint=0)
     pitch_pid.output_limits = (0, 60) 
 
     # Run main control loop 
@@ -84,7 +84,7 @@ if __name__ == '__main__':
         # Otherwise move the cmera pitch to center the subject
         else:
             y = loc[1]
-            y_delta = pitch_pid(loc[1])
+            y_delta = -pitch_pid(loc[1])
             car.Ctrl_Servo(2, y_delta)
             print(loc)
         #car.avoid(ir=ir, us=us)
