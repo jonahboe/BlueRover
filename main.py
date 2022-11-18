@@ -73,10 +73,3 @@ if __name__ == '__main__':
             del us
             del ir
             del em
-
-    # Stop the car and dispose of resources
-    car.Car_Stop() 
-    del car
-    del us
-    del ir
-    del em
