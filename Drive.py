@@ -17,6 +17,9 @@ class Drive(object):
     def __init__(self):
         # Create I2C device.
         self._device = self.get_i2c_device(0x16, 1)
+    
+    def __del__(self):
+        self.Car_Stop() 
 
     def write_u8(self, reg, data):
         try:

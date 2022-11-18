@@ -26,7 +26,6 @@ if __name__ == '__main__':
     try:
         em.start()
     except KeyboardInterrupt:
-        car.Car_Stop() 
         del car
         del us
         del ir
@@ -70,7 +69,6 @@ if __name__ == '__main__':
             time.sleep(0.2)
             car.Ctrl_Servo(2, int(pitch))
         except KeyboardInterrupt:
-            car.Car_Stop() 
             del car
             del us
             del ir
