@@ -49,7 +49,7 @@ if __name__ == '__main__':
         # If there isn't, then reset the pitch servo and wonder around
         if loc is None:
             pitch = 60
-            car.avoid()
+            car.avoid(us, ir)
         # Otherwise move the cmera pitch to center the subject
         else:
             # Adjust the camera
