@@ -26,7 +26,11 @@ if __name__ == '__main__':
     try:
         em.start()
     except KeyboardInterrupt:
-        pass
+        car.Car_Stop() 
+        del car
+        del us
+        del ir
+        del em
 
     # set pitch and yah servo for camera... Twice? There's a bug in the library.
     car.Ctrl_Servo(1, YAH)
@@ -49,7 +53,7 @@ if __name__ == '__main__':
         # If there isn't, then reset the pitch servo and wonder around
         if loc is None:
             pitch = 60
-            car.avoid(us, ir)
+            #car.avoid(us, ir)
         # Otherwise move the cmera pitch to center the subject
         else:
             # Adjust the camera
