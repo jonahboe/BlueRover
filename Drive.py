@@ -7,7 +7,7 @@ class Drive(object):
 
     def get_i2c_device(self, address, i2c_bus):
         self._addr = address
-        self.pid = PID(1, 0.3, 0.09, setpoint=0)
+        self.pid = PID(1, 0.1, 0.09, setpoint=0)
         self.diff = 0
         if i2c_bus is None:
             return smbus.SMBus(1)
