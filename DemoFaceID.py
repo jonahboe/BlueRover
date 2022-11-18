@@ -15,11 +15,11 @@ import numpy as np
 video_capture = cv2.VideoCapture(0)
 
 # Load a sample picture and learn how to recognize it.
-owner_image = face_recognition.load_image_file("images/jonah.jpg")
+owner_image = face_recognition.load_image_file("images/colton.jpg")
 owner_face_encoding = face_recognition.face_encodings(owner_image)[0]
 
 # Load a second sample picture and learn how to recognize it.
-colton_image = face_recognition.load_image_file("images/colton.jpg")
+colton_image = face_recognition.load_image_file("images/jonah.jpg")
 colton_face_encoding = face_recognition.face_encodings(colton_image)[0]
 
 # Create arrays of known face encodings and their names
@@ -28,8 +28,8 @@ known_face_encodings = [
     colton_face_encoding
 ]
 known_face_names = [
-    "Jonah",
     "Colton",
+    "Jonah",
 ]
 
 # Initialize some variables
@@ -58,6 +58,7 @@ while True:
         for face_encoding in face_encodings:
             # See if the face is a match for the known face(s)
             matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
+            print('matches:',matches)
             name = "Unknown"
 
             # # If a match was found in known_face_encodings, just use the first one.
@@ -67,7 +68,9 @@ while True:
 
             # Or instead, use the known face with the smallest distance to the new face
             face_distances = face_recognition.face_distance(known_face_encodings, face_encoding)
+            print('face_distances:',face_distances)
             best_match_index = np.argmin(face_distances)
+            print('best_match_index:',best_match_index)
             if matches[best_match_index]:
                 name = known_face_names[best_match_index]
 
