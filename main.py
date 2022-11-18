@@ -64,7 +64,7 @@ if __name__ == '__main__':
                 elif pitch > 60:
                     pitch = 60
                 # Drive toward the owner
-                car.approach(loc[0]/50)
+                car.approach(loc[0]/30)
                 
             time.sleep(0.2)
             car.Ctrl_Servo(2, int(pitch))
