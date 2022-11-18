@@ -13,38 +13,6 @@ ir = IR.IR()
 YAH = 80
 LOCATING_TIMEOUT = 10
 
-def runCar():
-    car.Car_Run(150, 150)
-    time.sleep(1)
-    car.Car_Stop()
-
-def tiltServo():
-    # Tilt
-    car.Ctrl_Servo(1, 180) #The servo connected to the S1 interface on the expansion board, rotate to 180°
-    time.sleep(0.5)
-
-    car.Ctrl_Servo(2, 180) #The servo connected to the S2 interface on the expansion board, rotate to 180°
-    time.sleep(0.5)
-    
-    # And back
-    car.Ctrl_Servo(1, 90)
-    time.sleep(0.5)
-        
-    car.Ctrl_Servo(2, 90)
-    time.sleep(0.5)
-
-def detectDistance():
-    for i in range(20):
-        print(us.distance())
-        time.sleep(1)
-
-def testIR():
-    for i in range(20):
-        print("Right: " + str(ir.getRightDetect()))
-        print("Left: " + str(ir.getLeftDetect()))
-        print()
-        time.sleep(1)
-
 # Main code goes here
 if __name__ == '__main__':
     # Set up the emotion detection
@@ -78,18 +46,22 @@ if __name__ == '__main__':
             loc = em.location
             if loc is not None:
                 break
-        # If there isn't, then reset the pitch servo
+        # If there isn't, then reset the pitch servo and wonder around
         if loc is None:
             pitch = 60
-            # Do some colision avoidance
+            #car.avoid()
         # Otherwise move the cmera pitch to center the subject
         else:
+            # Adjust the camera
             pitch -= pitch_pid(loc[1]/100)
             print(pitch)
             if pitch < 10:
                 pitch = 10
             elif pitch > 60:
                 pitch = 60
+            # Drive toward the owner
+            car.approach(loc[0]/100)
+            
         time.sleep(0.2)
         car.Ctrl_Servo(2, int(pitch))
 

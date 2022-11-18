@@ -1,11 +1,14 @@
 import smbus
 import time
 import math
+from simple_pid import PID
 
 class Drive(object):
 
     def get_i2c_device(self, address, i2c_bus):
         self._addr = address
+        self.pid = PID(1, 0.1, 0.09, setpoint=0)
+        self.diff = 0
         if i2c_bus is None:
             return smbus.SMBus(1)
         else:
@@ -166,3 +169,11 @@ class Drive(object):
             time.sleep(0.5)
         else:
             self.Car_Run(80,80) 
+
+    def approach(self, pos):
+        self.diff -= int(self.pid(pos))
+        if self.diff < -10:
+            self.diff = -10
+        elif self.diff > 10:
+            self.diff = 10
+        self.Car_Run(1, 60+self.diff, 1, 60-self.diff)
