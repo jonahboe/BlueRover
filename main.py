@@ -1,7 +1,7 @@
 import sys
 import Drive
 import Ultrasonic
-import Emotion
+import FacialRecognition
 import IR
 import time
 from simple_pid import PID
@@ -16,7 +16,7 @@ LOCATING_TIMEOUT = 10
 # Main code goes here
 if __name__ == '__main__':
     # Set up the emotion detection
-    em = Emotion.Emotion()
+    em = FacialRecognition.Emotion()
     em.daemon = True
     args = []
     for arg in sys.argv:
@@ -54,7 +54,7 @@ if __name__ == '__main__':
             if loc is None:
                 pitch = 60
                 #car.avoid(us, ir)
-            # Otherwise move the cmera pitch to center the subject
+            # Otherwise move the camera pitch to center the subject
             else:
                 # Adjust the camera
                 pitch -= pitch_pid(loc[1]/100)
