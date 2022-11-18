@@ -176,4 +176,4 @@ class Drive(object):
             self.diff = -10
         elif self.diff > 10:
             self.diff = 10
-        self.Car_Run(1, 60+self.diff, 1, 60-self.diff)
+        self.Car_Run(60+self.diff, 60-self.diff)
