@@ -54,16 +54,18 @@ class FacialRecognition(threading.Thread):
 
     
     def detectEmotion(self, image, emotion_detector):
-        captured_emotions = emotion_detector.detect_emotions(image)
-        if len(captured_emotions) > 0:
-            # Determine the emotion and play the apropriate sound
-            emotions = captured_emotions[0]['emotions']
-            print(emotions)
-            dominant = max(emotions, key=emotions.get)
-            if dominant == 'happy':
-                self.soundQueue.append('audio/happy.wav')
-            elif dominant == 'sad':
-                self.soundQueue.append('audio/whimper.wav')
+        # Respond to owners emotions, without overloading buffer
+        if self.owner and len(self.soundQueue) <= 2:
+            captured_emotions = emotion_detector.detect_emotions(image)
+            if len(captured_emotions) > 0:
+                # Determine the emotion and play the apropriate sound
+                emotions = captured_emotions[0]['emotions']
+                print(emotions)
+                dominant = max(emotions, key=emotions.get)
+                if dominant == 'happy':
+                    self.soundQueue.append('audio/happy.wav')
+                elif dominant == 'sad':
+                    self.soundQueue.append('audio/whimper.wav')
         
     def run(self):
         emThread = threading.Thread(target=self.detectEmotion)

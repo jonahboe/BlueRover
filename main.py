@@ -8,13 +8,13 @@ import threading
 from simple_pid import PID
 from playsound import playsound
 
-car = Drive.Drive()
 us = Ultrasonic.Ultrasonic()
 ir = IR.IR()
+car = Drive.Drive(us, ir)
 
 YAH = 80
-LOCATING_TIMEOUT = 10
-OWNER_TIMEOUT = 20
+PERSON_TIMEOUT = 10
+OWNER_TIMEOUT = 5
 
 def sound():
     playsound(em.soundQueue.pop(0))
@@ -46,45 +46,76 @@ if __name__ == '__main__':
 
     # We need a PID controller for the pitch servo
     pitch_pid = PID(1, 0.1, 0.09, setpoint=0) 
-
     # Run main control loop
     pitch = 60
-
     # Thread for sound
     soundThread = threading.Thread(target=sound)
+    # Timer for person detection
+    personTimer = time.time() + PERSON_TIMEOUT
+    ownerTimer = time.time() + OWNER_TIMEOUT
     while True:
         try:
-            # Check if there is a person
-            for t in range(LOCATING_TIMEOUT):
-                loc = em.location
-                if loc is not None:
-                    break
-            # If there isn't, then reset the pitch servo and wonder around
-            if loc is None:
-                pitch = 60
-                car.avoid(us, ir)
-            # Otherwise move the camera pitch to center the subject
+            # Get person location
+            loc = em.location
+
+            # If there is an owner...
+            if em.owner:
+                # If there isn't a person...
+                if loc is None:
+                    # If so much time has elapsed since last seeing someone...
+                    if time.time() - personTimer >= 10:
+                        # Reset the owner
+                        em.owner = False
+                    # Otherwise, wait for a person to enter frame
+                    else:
+                        car.Car_Stop()
+                # If there is a person...
+                else:
+                    # Reset the person timer
+                    personTimer = time.time()
+                    # Adjust the camera
+                    pitch -= pitch_pid(loc[1]/100)
+                    print(pitch)
+                    if pitch < 10:
+                        pitch = 10
+                    elif pitch > 60:
+                        pitch = 60
+                    # Drive towards them
+                    car.approach(loc[0]/30, pitch)
+
+
+            # If there is not an owner...
             else:
-                # Adjust the camera
-                pitch -= pitch_pid(loc[1]/100)
-                print(pitch)
-                if pitch < 10:
-                    pitch = 10
-                elif pitch > 60:
-                    pitch = 60
-                # Check if owner
-                car.Car_Stop
-                for i in range(OWNER_TIMEOUT):
-                    time.sleep(0.5)
-                    if em.owner:
-                        break
-                # Drive to owner
-                if em.owner:
-                    car.approach(loc[0]/30)
-                # TODO: Otherwise run away
-            # Write the pitch to the camera 
-            time.sleep(0.2)
-            car.Ctrl_Servo(2, int(pitch))
+                # If there isn't a person...
+                if loc is None:
+                    # If so much time has elapsed since last seeing someone...
+                    if time.time() - personTimer >= 10:
+                        # Reset the pitch servo and wonder around
+                        pitch = 60
+                        car.rome()
+                    # Otherwise, wait for a person to enter frame
+                    else:
+                        car.Car_Stop()
+                # If there is a person...
+                else:
+                    # Reset the person timer
+                    personTimer = time.time()
+                    # If no owner exists, wait for owner identification
+                    if not em.owner:
+                        car.Car_Stop()
+                        ownerTimer = time.time()
+                        while time.time() - ownerTimer < OWNER_TIMEOUT:
+                            if em.owner:
+                                break
+                    # If there is stil no owner, then get away barking
+                    if not em.owner:
+                        em.soundQueue.append('audio/growling.wav')
+                        em.soundQueue.append('audio/growling.wav')
+                        car.evade()
+
+                # Write the pitch to the camera 
+                time.sleep(0.2)
+                car.Ctrl_Servo(2, int(pitch))
 
             # Play sounds
             if len(em.soundQueue) > 0 and not soundThread.is_alive():

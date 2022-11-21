@@ -16,9 +16,11 @@ class Drive(object):
         else:
             return smbus.SMBus(i2c_bus)
 
-    def __init__(self):
+    def __init__(self, us, ir):
         # Create I2C device.
         self._device = self.get_i2c_device(0x16, 1)
+        self.us = us
+        self.ir = ir
     
     def __del__(self):
         self.Car_Stop() 
@@ -121,10 +123,10 @@ class Drive(object):
         except:
             print ('Ctrl_Servo I2C error') 
 
-    def avoid(self, us, ir):
-        distance = us.distanceTest()
-        LeftSensorValue  = ir.getLeftDetect()
-        RightSensorValue = ir.getRightDetect()
+    def rome(self, us, ir):
+        distance = self.us.distanceTest()
+        LeftSensorValue  = self.ir.getLeftDetect()
+        RightSensorValue = self.ir.getRightDetect()
         print("L: {0}, R: {1}".format(LeftSensorValue, RightSensorValue))
         #With obstacle pin is low level, the indicator light is on, without obstacle, pin is high level, the indicator light is off
         if distance < 15 or (LeftSensorValue and RightSensorValue):
@@ -134,13 +136,24 @@ class Drive(object):
             self.Car_Left(MAX_SPEED,0) 
             time.sleep(0.5)
         elif LeftSensorValue and not RightSensorValue:
-            self .Car_Right(0,MAX_SPEED) 
+            self.Car_Right(0,MAX_SPEED) 
             time.sleep(0.5)
+        else:
+            self.Car_Run(MAX_SPEED,MAX_SPEED)
+    
+    def evade(self):
+        self.Car_Spin_Right(MAX_SPEED,MAX_SPEED)
+        time.sleep(1)
+        timer = time.time()
+        while time.time() - timer < 10:
+            self.rome()
 
-    def approach(self, pos):
-        self.diff -= int(self.pid(pos))
-        if self.diff < -10:
-            self.diff = -10
-        elif self.diff > 10:
-            self.diff = 10
-        self.Car_Run(60+self.diff, 60-self.diff)
+    def approach(self, pos, pitch):
+        # If we are not close yet
+        if not (self.us.distanceTest() < 15 or pitch < 15):
+            self.diff -= int(self.pid(pos))
+            if self.diff < -10:
+                self.diff = -10
+            elif self.diff > 10:
+                self.diff = 10
+            self.Car_Run(60+self.diff, 60-self.diff)
