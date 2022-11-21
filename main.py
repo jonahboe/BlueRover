@@ -14,6 +14,7 @@ ir = IR.IR()
 
 YAH = 80
 LOCATING_TIMEOUT = 10
+OWNER_TIMEOUT = 20
 
 def sound():
     playsound(em.soundQueue.pop(0))
@@ -61,7 +62,7 @@ if __name__ == '__main__':
             # If there isn't, then reset the pitch servo and wonder around
             if loc is None:
                 pitch = 60
-                #car.avoid(us, ir)
+                car.avoid(us, ir)
             # Otherwise move the camera pitch to center the subject
             else:
                 # Adjust the camera
@@ -71,8 +72,16 @@ if __name__ == '__main__':
                     pitch = 10
                 elif pitch > 60:
                     pitch = 60
-                # Drive toward the owner
-                car.approach(loc[0]/30)
+                # Check if owner
+                car.Car_Stop
+                for i in range(OWNER_TIMEOUT):
+                    time.sleep(0.5)
+                    if em.owner:
+                        break
+                # Drive to owner
+                if em.owner:
+                    car.approach(loc[0]/30)
+                # TODO: Otherwise run away
             # Write the pitch to the camera 
             time.sleep(0.2)
             car.Ctrl_Servo(2, int(pitch))

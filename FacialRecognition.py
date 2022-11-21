@@ -106,7 +106,7 @@ class FacialRecognition(threading.Thread):
             if not emThread.is_alive():
                 emThread = threading.Thread(target=self.detectEmotion, args=(deepcopy(image), self.emotion_detector))
                 emThread.start()
-            if not idThread.is_alive():
+            if not self.owner and not idThread.is_alive():
                 idThread = threading.Thread(target=self.detectID, args=(deepcopy(image), True))
                 idThread.start()
 
