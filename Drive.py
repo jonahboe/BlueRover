@@ -3,7 +3,7 @@ import time
 import math
 from simple_pid import PID
 
-MAX_SPEED = 40
+MAX_SPEED = 60
 
 class Drive(object):
 
@@ -156,4 +156,4 @@ class Drive(object):
                 self.diff = -10
             elif self.diff > 10:
                 self.diff = 10
-            self.Car_Run(60+self.diff, 60-self.diff)
+            self.Car_Run(MAX_SPEED + self.diff, MAX_SPEED - self.diff)
