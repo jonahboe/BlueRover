@@ -15,7 +15,7 @@ ir = IR.IR()
 YAH = 80
 LOCATING_TIMEOUT = 10
 
-def sound(self):
+def sound():
     playsound(em.soundQueue.pop(0))
 
 # Main code goes here
