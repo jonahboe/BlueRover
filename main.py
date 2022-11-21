@@ -4,7 +4,9 @@ import Ultrasonic
 import FacialRecognition
 import IR
 import time
+import threading
 from simple_pid import PID
+from playsound import playsound
 
 car = Drive.Drive()
 us = Ultrasonic.Ultrasonic()
@@ -12,6 +14,9 @@ ir = IR.IR()
 
 YAH = 80
 LOCATING_TIMEOUT = 10
+
+def sound(self):
+    playsound(em.soundQueue.pop(0))
 
 # Main code goes here
 if __name__ == '__main__':
@@ -43,6 +48,9 @@ if __name__ == '__main__':
 
     # Run main control loop
     pitch = 60
+
+    # Thread for sound
+    soundThread = threading.Thread(target=sound)
     while True:
         try:
             # Check if there is a person
@@ -65,9 +73,14 @@ if __name__ == '__main__':
                     pitch = 60
                 # Drive toward the owner
                 car.approach(loc[0]/30)
-                
+            # Write the pitch to the camera 
             time.sleep(0.2)
             car.Ctrl_Servo(2, int(pitch))
+
+            # Play sounds
+            if len(em.soundQueue) > 0 and not soundThread.is_alive():
+                soundThread = threading.Thread(target=sound)
+                soundThread.start()
         except KeyboardInterrupt:
             del car
             del us

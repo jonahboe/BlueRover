@@ -1,5 +1,4 @@
 from copy import deepcopy
-from playsound import playsound
 from fer import FER
 import face_recognition
 import threading
@@ -14,6 +13,7 @@ class FacialRecognition(threading.Thread):
         self.owner_face_encoding = face_recognition.face_encodings(owner_image)[0]
         self.cam = cv2.VideoCapture(0)
         self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        self.soundQueue = []
         self.render = False
         self.location = None
         self.owner = False
@@ -63,9 +63,9 @@ class FacialRecognition(threading.Thread):
             print(emotions)
             dominant = max(emotions, key=emotions.get)
             if dominant == 'happy':
-                playsound('audio/happy.wav')
+                self.soundQueue.append('audio/happy.wav')
             elif dominant == 'sad':
-                playsound('audio/whimper.wav')
+                self.soundQueue.append('audio/whimper.wav')
         
     def run(self):
         emThread = threading.Thread(target=self.detectEmotion)
