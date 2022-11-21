@@ -123,7 +123,7 @@ class Drive(object):
         except:
             print ('Ctrl_Servo I2C error') 
 
-    def rome(self, us, ir):
+    def rome(self):
         distance = self.us.distanceTest()
         LeftSensorValue  = self.ir.getLeftDetect()
         RightSensorValue = self.ir.getRightDetect()
