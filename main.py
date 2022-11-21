@@ -21,7 +21,7 @@ def sound(self):
 # Main code goes here
 if __name__ == '__main__':
     # Set up the emotion detection
-    em = FacialRecognition.Emotion()
+    em = FacialRecognition.FacialRecognition()
     em.daemon = True
     args = []
     for arg in sys.argv:

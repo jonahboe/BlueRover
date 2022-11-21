@@ -16,6 +16,7 @@ class FacialRecognition(threading.Thread):
         self.soundQueue = []
         self.render = False
         self.location = None
+        self.faces = []
         self.owner = False
 
     def __del__(self):
@@ -40,20 +41,17 @@ class FacialRecognition(threading.Thread):
                 self.owner = True
                 name = 'Owner'
             face_names.append(name)
-        if self.owner and render:
-            # Display the results
-            for (top, right, bottom, left), name in zip(face_locations, face_names):
-                # Scale back up face locations since the frame we detected in was scaled to 1/4 size
-                top *= 4
-                right *= 4
-                bottom *= 4
-                left *= 4
-                # Draw a box around the face
-                cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
-                # Draw a label with a name below the face
-                cv2.rectangle(frame, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
-                font = cv2.FONT_HERSHEY_DUPLEX
-                cv2.putText(frame, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1) 
+        self.faces.clear()
+        # Display the results
+        if not render: return
+        for (top, right, bottom, left), name in zip(face_locations, face_names):
+            # Scale back up face locations since the frame we detected in was scaled to 1/4 size
+            top *= 4
+            right *= 4
+            bottom *= 4
+            left *= 4
+            self.faces.append((name,top,right,bottom,left))
+
     
     def detectEmotion(self, image, emotion_detector):
         captured_emotions = emotion_detector.detect_emotions(image)
@@ -88,7 +86,14 @@ class FacialRecognition(threading.Thread):
                 self.location = ((x+w/2)-320, (y+h/2)-180)
                 # Draw box for rendering people location
                 if self.render:
-                    cv2.rectangle(image,(x,y),(x+w,y+h),(255,255,0),2)
+                    for name, top, right, bottom, left in self.faces:
+                        # cv2.rectangle(image,(x,y),(x+w,y+h),(255,255,0),2)
+                        # Draw a box around the face
+                        cv2.rectangle(image, (left, top), (right, bottom), (255, 255, 0), 2)
+                        # Draw a label with a name below the face
+                        cv2.rectangle(image, (left, bottom - 35), (right, bottom), (0, 0, 255), cv2.FILLED)
+                        font = cv2.FONT_HERSHEY_DUPLEX
+                        cv2.putText(image, name, (left + 6, bottom - 6), font, 1.0, (255, 255, 255), 1) 
             # Otherwise set the person location to none
             else:
                 self.location = None
@@ -99,11 +104,11 @@ class FacialRecognition(threading.Thread):
             
             # If we are finished reading the last emotion detected, then detect the next emotion
             if not emThread.is_alive():
-                myThread = threading.Thread(target=self.detectEmotion, args=(deepcopy(image), self.emotion_detector))
-                myThread.start()
+                emThread = threading.Thread(target=self.detectEmotion, args=(deepcopy(image), self.emotion_detector))
+                emThread.start()
             if not idThread.is_alive():
-                myThread = threading.Thread(target=self.detectID, args=(deepcopy(image), True))
-                myThread.start()
+                idThread = threading.Thread(target=self.detectID, args=(deepcopy(image), True))
+                idThread.start()
 
             if cv2.waitKey(1) == 27: 
                 cv2.destroyAllWindows()
