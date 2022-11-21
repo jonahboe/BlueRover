@@ -3,6 +3,8 @@ import time
 import math
 from simple_pid import PID
 
+MAX_SPEED = 40
+
 class Drive(object):
 
     def get_i2c_device(self, address, i2c_bus):
@@ -125,53 +127,15 @@ class Drive(object):
         RightSensorValue = ir.getRightDetect()
         print("L: {0}, R: {1}".format(LeftSensorValue, RightSensorValue))
         #With obstacle pin is low level, the indicator light is on, without obstacle, pin is high level, the indicator light is off
-        if distance < 15 and LeftSensorValue and RightSensorValue:
-            self.Car_Stop() 
-            time.sleep(0.1)
-            self.Car_Spin_Right(80,80) 
+        if distance < 15 or (LeftSensorValue and RightSensorValue):
+            self.Car_Spin_Right(MAX_SPEED,MAX_SPEED) 
             time.sleep(1)
-        elif distance < 15 and not LeftSensorValue and RightSensorValue:
-            self.Car_Stop()
-            time.sleep(0.1)
-            self.Car_Spin_Left(80,80) 
-            time.sleep(1)
-            if LeftSensorValue and not RightSensorValue:
-                self.Car_Stop()
-                time.sleep(0.1)
-                self .Car_Spin_Right(80,80) 
-                time.sleep(2)
-        elif distance < 15 and LeftSensorValue and not RightSensorValue:
-            self.Car_Stop() 
-            time.sleep(0.1)
-            self.Car_Spin_Right(80,80)
-            time.sleep(1)
-            if not LeftSensorValue and RightSensorValue:
-                self.Car_Stop()
-                time.sleep(0.1)
-                self.Car_Spin_Left(80,80) 
-                time.sleep(2)
-        elif distance < 15 and not LeftSensorValue and not RightSensorValue:
-            self.Car_Stop() 
-            time.sleep(0.1)
-            self.Car_Spin_Right(80,80) 
+        elif not LeftSensorValue and RightSensorValue:
+            self.Car_Left(MAX_SPEED,0) 
             time.sleep(0.5)
-        elif distance >= 15 and LeftSensorValue and RightSensorValue:
-            self.Car_Stop() 
-            time.sleep(0.1)
-            self.Car_Spin_Right(80,80) 
-            time.sleep(1)
-        elif distance >= 15 and LeftSensorValue and not RightSensorValue:
-            self.Car_Stop() 
-            time.sleep(0.1)
-            self.Car_Spin_Right(80,80) 
+        elif LeftSensorValue and not RightSensorValue:
+            self .Car_Right(0,MAX_SPEED) 
             time.sleep(0.5)
-        elif distance >= 15 and not LeftSensorValue and RightSensorValue:
-            self.Car_Stop() 
-            time.sleep(0.1)
-            self.Car_Spin_Left(80,80) 
-            time.sleep(0.5)
-        else:
-            self.Car_Run(80,80) 
 
     def approach(self, pos):
         self.diff -= int(self.pid(pos))
