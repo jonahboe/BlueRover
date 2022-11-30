@@ -4,6 +4,7 @@ import math
 from simple_pid import PID
 
 MAX_SPEED = 60
+MIN_SPEED = 30
 
 class Drive(object):
 
@@ -127,7 +128,7 @@ class Drive(object):
         distance = self.us.distanceTest()
         LeftSensorValue  = self.ir.getLeftDetect()
         RightSensorValue = self.ir.getRightDetect()
-        print("L: {0}, R: {1}".format(LeftSensorValue, RightSensorValue))
+        # print("L: {0}, R: {1}".format(LeftSensorValue, RightSensorValue))
         #With obstacle pin is low level, the indicator light is on, without obstacle, pin is high level, the indicator light is off
         if distance < 15 or (LeftSensorValue and RightSensorValue):
             self.Car_Spin_Right(MAX_SPEED,MAX_SPEED) 
@@ -140,6 +141,7 @@ class Drive(object):
             time.sleep(0.5)
         else:
             self.Car_Run(MAX_SPEED,MAX_SPEED)
+        # ...
     
     def evade(self):
         self.Car_Spin_Right(MAX_SPEED,MAX_SPEED)
@@ -147,13 +149,13 @@ class Drive(object):
         timer = time.time()
         while time.time() - timer < 10:
             self.rome()
+        # ...
 
     def approach(self, pos, pitch):
-        # If we are not close yet
+        '''If we are not close yet'''
         if not (self.us.distanceTest() < 15 or pitch < 15):
             self.diff -= int(self.pid(pos))
-            if self.diff < -10:
-                self.diff = -10
-            elif self.diff > 10:
-                self.diff = 10
+            # between -10 --> 10
+            self.diff = min(max(self.diff,-10),10)
             self.Car_Run(MAX_SPEED + self.diff, MAX_SPEED - self.diff)
+        # ...

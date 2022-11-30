@@ -55,5 +55,5 @@ class Ultrasonic:
                 num = num + 1
                 time.sleep(0.01)
         distance = (ultrasonic[1] + ultrasonic[2])/2
-        print("distance is %f"%(distance) ) 
+#        print("distance is %f"%(distance) ) 
         return distance
