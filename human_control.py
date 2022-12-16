@@ -1,3 +1,9 @@
+# This is a script for controlling the system manualy
+#
+# Last edit: 30 Nov, 2022 
+# By: Colton Hill
+#
+
 import sys
 import Drive
 from Drive import MAX_SPEED, MIN_SPEED

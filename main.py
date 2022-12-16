@@ -1,3 +1,14 @@
+# This script describes the main functionality of the Blue Rover
+# Emotional Support animal. This project was developed for the
+# final project of the SC6510 course, at Utah State University.
+#
+# Contributers:
+# Jonah Boe, Colton Hill, Ela Bohlourihajar, and Tyler Conley
+#
+# Last edit: 30 Nov, 2022 
+# By: Colton Hill
+#
+
 import sys
 import Drive
 import Ultrasonic
@@ -8,20 +19,26 @@ import threading
 from simple_pid import PID
 from playsound import playsound
 
+# Create ultrasonic, infrared, and motor driving objects
 us = Ultrasonic.Ultrasonic()
 ir = IR.IR()
 car = Drive.Drive(us, ir)
 
+# Default camera pitch
 YAH = 80
+# Timeout to wait for a person to reenter the frame
 PERSON_TIMEOUT = 10
+# Timeout from the time a person is noticed to the time they have
+# to be confirmed as the owner
 OWNER_TIMEOUT = 5
 
+# Function for playing the last sound in the queue
 def sound():
     playsound(FR.soundQueue.pop(0))
 
 # Main code goes here
 if __name__ == '__main__':
-    # Set up the emotion detection
+    # Set up the facial detection
     FR = FacialRecognition.FacialRecognition()
     FR.daemon = True
     args = []
@@ -31,6 +48,7 @@ if __name__ == '__main__':
         FR.render = True
     try:
         FR.start()
+    # If the program is closed, delete resources
     except KeyboardInterrupt:
         del car
         del us
@@ -128,6 +146,7 @@ if __name__ == '__main__':
                 soundThread = threading.Thread(target=sound)
                 soundThread.start()
 
+        # If the program is closed, delete resources
         except KeyboardInterrupt:
             del car
             del us

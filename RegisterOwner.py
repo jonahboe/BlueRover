@@ -1,3 +1,9 @@
+# This script describes the process for identifying the owner
+#
+# Last edit: 16 Nov, 2022 
+# By: Colton Hill
+#
+
 import face_recognition
 import cv2
 import numpy as np

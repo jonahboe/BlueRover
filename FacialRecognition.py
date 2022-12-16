@@ -1,3 +1,11 @@
+# This script describes a class for recognizing faces and emotions.
+# Note: This class is threaded, as the processes contained take non-trivial time
+# to execute.
+#
+# Last edit: 30 Nov, 2022 
+# By: Colton Hill
+#
+
 from copy import deepcopy
 from fer import FER
 import face_recognition
@@ -5,25 +13,38 @@ import threading
 import cv2
 
 class FacialRecognition(threading.Thread):
+    
+    # Initialize the object and the thread parent
     def __init__(self):
         super().__init__()
+        # Initialize the ID and emotion detection
         self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
         self.emotion_detector = FER(mtcnn=True)
+        # Set the owner based on preloaded image
         owner_image = face_recognition.load_image_file("images/owner.jpg")
         self.owner_face_encoding = face_recognition.face_encodings(owner_image)[0]
+        # Initialize the webcam
         self.cam = cv2.VideoCapture(0)
         self.cam.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+        # Queue for what sounds the dog will make
         self.soundQueue = []
+        # Flag for displaying the live camera feed
         self.render = False
+        # Position of a subject in the screen
         self.location = None
+        # List of IDs
         self.faces_ID = []
+        # List of emotions
         self.faces_em = []
+        # Flag to indicate if current subject is the owner
         self.owner = False
 
+    # Upon deletion, destroy the camera and CV2 window.
     def __del__(self):
         self.cam.release()
         cv2.destroyAllWindows()
 
+    # Try to determine if the subject is our owner
     def detectID(self, frame, render=False):
         # Resize frame of video to 1/4 size for faster face recognition processing
         # small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
@@ -58,7 +79,7 @@ class FacialRecognition(threading.Thread):
             self.faces_ID.append((name,top,right,bottom,left))
         # print("\t\tID:",self.faces_ID)
 
-    
+    # Try to detect the subjects dominant emotion
     def detectEmotion(self, image, emotion_detector):
         # Respond to owners emotions, without overloading buffer
         if self.owner and len(self.soundQueue) <= 2:
@@ -72,7 +93,8 @@ class FacialRecognition(threading.Thread):
                     self.soundQueue.append('audio/happy.wav')
                 elif dominant == 'sad':
                     self.soundQueue.append('audio/whimper.wav')
-        
+    
+    # Main thread for facial recognition
     def run(self):
         # emThread = threading.Thread(target=self.detectEmotion)
         idThread = threading.Thread(target=self.detectID)

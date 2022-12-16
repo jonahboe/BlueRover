@@ -1,13 +1,19 @@
+# This script is just a for testing the functionality of face recognition and emotion detection.
+#
+# Last edit: 30 Nov, 2022 
+# By: Colton Hill
+#
+
 from fer import FER
 import face_recognition
 import cv2
 import numpy as np
 import sys
 
-#* Emotions
+# Emotions
 emotion_detector = FER(mtcnn=True)
 
-#* FACE ID
+# FACE ID
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture(0)
 
@@ -32,7 +38,7 @@ while True:
     # Grab a single frame of video
     ret, frame = video_capture.read()
 
-    # Only process every other frame of video to save time
+    # Only process every fourth frame of video to save time
     if process_this_frame%4==0:
         # Resize frame of video to 1/4 size for faster face recognition processing
         # small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
@@ -59,15 +65,16 @@ while True:
 
             face_names.append(name)
     
+    # If we have reached the the eigth frame
     if process_this_frame == 8:
         try:
+            # Capture the current emotion and pick the dominant one
             small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
             captured_emotions = emotion_detector.detect_emotions(small_frame)
             emotions = captured_emotions[0]['emotions']
             emotion = max(emotions.items(),key=lambda x:x[1])[0]
         except:
             ...
-
     process_this_frame = (process_this_frame+1)%16
 
 

@@ -1,8 +1,14 @@
+# This script describes a class for ultrasonic detrection, using the robots GPIO
+#
+# Last edit: 4 Nov, 2022 
+# By: Jonah Boe
+#
+
 import RPi.GPIO as GPIO
 import time
 
 class Ultrasonic:
-
+    # Initialize all of the GPIO pins
     def __init__(self):
         GPIO.setwarnings(False)
         self.EchoPin = 18
@@ -11,10 +17,12 @@ class Ultrasonic:
         GPIO.setup(self.EchoPin,GPIO.IN)
         GPIO.setup(self.TrigPin,GPIO.OUT)
 
+     # Upon deletion, release the GPIO resources
     def __del__(self):
         GPIO.cleanup()
 
-    #Ultrasonic function
+    # Ultrasonic function
+    # Note: This code came with the robot
     def distance(self):
         GPIO.output(self.TrigPin,GPIO.LOW)
         time.sleep(0.000002)
@@ -38,7 +46,9 @@ class Ultrasonic:
         time.sleep(0.01)
         #print ("distance_1 is %d " % (((t2 - t1)* 340 / 2) * 100))
         return ((t2 - t1)* 340 / 2) * 100
-
+    
+    # Ultrasonic test function
+    # Note: This code came with the robot
     def distanceTest(self):
         num = 0
         ultrasonic = []
@@ -55,5 +65,4 @@ class Ultrasonic:
                 num = num + 1
                 time.sleep(0.01)
         distance = (ultrasonic[1] + ultrasonic[2])/2
-#        print("distance is %f"%(distance) ) 
         return distance
