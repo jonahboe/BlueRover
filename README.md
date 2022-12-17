@@ -1,7 +1,7 @@
 # Blue Rover
 This project showcases the use of common Python libraries in developing a robotic emotional support animal. The system can roam around, identify and approach its owner, recognize emotions, and respond accordingly with audio feedback.
 
-This project was completed as the final for the CS-6510 robotics course at Utah State University. The report for this project is located [here](https://github.com/jonahboe/BlueRover/blob/main/report.pdf).
+This project was completed as the final for the CS-6510 robotics course at Utah State University. The report for this project is located [here](https://github.com/jonahboe/BlueRover/blob/main/Report.pdf).
 
 Group members: [Jonah Boe](https://github.com/jonahboe), [Colton Hill](https://github.com/ColtonChill), [Kobra Bohlourihajar](https://github.com/Ela1624), and [Tyler Conley](https://github.com/tylerTaerak)
 
